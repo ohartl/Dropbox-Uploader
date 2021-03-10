@@ -24,7 +24,7 @@ jobs:
           - file: 'Dockerfile.pi'
             platforms: 'linux/arm/v7'
           - file: 'Dockerfile.pi64'
-            platforms: 'linux/arm64,linux/arm64/v8'
+            platforms: 'linux/arm64'
     services:
       registry:
         image: registry:2
