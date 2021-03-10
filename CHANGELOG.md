@@ -7,7 +7,6 @@
   * Add zip in docker image
   * Add Docker file for Rpi4/arm-64bit/v8
   * Add command meta, to get metadata from remote files (last modified and size)
-  * Readme updated with prebuit containers path
 
 ## Version 1.0 - 10 Aug 2016
 * Add search option
