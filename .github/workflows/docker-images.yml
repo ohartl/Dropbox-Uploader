@@ -1,20 +1,7 @@
 name: Build and push Docker images
 
 env:
-      IMAGE_NAME: ohartl/dropbox-uploader
-
-strategy:
-  matrix:
-    target:
-      - name: 'dropbox-uploader'
-        file: 'Dockerfile'
-        platforms: 'linux/amd64,linux/386'
-      - name: 'dropbox-uploader:'
-        file: 'Dockerfile.pi'
-        platforms: 'llinux/arm/v7'
-      - name: 'RaspberryPi 64bit'
-        file: 'Dockerfile.pi64'
-        platforms: 'linux/arm64,linux/arm64/v8'
+  IMAGE_NAME: ohartl/dropbox-uploader
 
 on:
   push:
@@ -29,6 +16,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+          - file: 'Dockerfile'
+            platforms: 'linux/amd64,linux/386'
+          - file: 'Dockerfile.pi'
+            platforms: 'llinux/arm/v7'
+          - file: 'Dockerfile.pi64'
+            platforms: 'linux/arm64,linux/arm64/v8'
     services:
       registry:
         image: registry:2
@@ -84,8 +80,8 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: './${{ matrix.target.file }}'
-        platforms: ${{ matrix.target.platforms }}
+        file: './${{ matrix.file }}'
+        platforms: ${{ matrix.platforms }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.docker_meta.outputs.tags }}
         labels: ${{ steps.docker_meta.outputs.labels }}
