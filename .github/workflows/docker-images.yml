@@ -1,5 +1,21 @@
 name: Build and push Docker images
 
+env:
+      IMAGE_NAME: ohartl/dropbox-uploader
+
+strategy:
+  matrix:
+    target:
+      - name: 'dropbox-uploader'
+        file: 'Dockerfile'
+        platforms: 'linux/amd64,linux/386'
+      - name: 'dropbox-uploader:'
+        file: 'Dockerfile.pi'
+        platforms: 'llinux/arm/v7'
+      - name: 'RaspberryPi 64bit'
+        file: 'Dockerfile.pi64'
+        platforms: 'linux/arm64,linux/arm64/v8'
+
 on:
   push:
     branches:
@@ -12,7 +28,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     services:
       registry:
         image: registry:2
@@ -27,10 +43,13 @@ jobs:
       with:
         # list of Docker images to use as base name for tags
         images: |
-          ohartl/dropbox-uploader
-          ghcr.io/ohartl/dropbox-uploader
-        # add git short SHA as Docker tag
-        tag-sha: true
+          ${{ env.IMAGE_NAME }}
+          ghcr.io/${{ env.IMAGE_NAME }}
+        tag-semver: |
+          {{version}}
+          {{major}}.{{minor}}
+          {{major}}
+        #tag-sha: true
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
@@ -42,10 +61,10 @@ jobs:
     #  with:
     #    context: .
     #    push: true
-    #    tags: localhost:5000/ohartl/dropbox-uploader:latest
+    #    tags: localhost:5000/${{ env.IMAGE_NAME }}:latest
     #- name: Inspect
     #  run: |
-    #    docker buildx imagetools inspect localhost:5000/ohartl/dropbox-uploader:latest
+    #    docker buildx imagetools inspect localhost:5000/${{ env.IMAGE_NAME }}:latest
 
     - name: Login to Docker Hub Registry
       if: github.event_name != 'pull_request'
@@ -65,6 +84,8 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
+        file: './${{ matrix.target.file }}'
+        platforms: ${{ matrix.target.platforms }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.docker_meta.outputs.tags }}
         labels: ${{ steps.docker_meta.outputs.labels }}
