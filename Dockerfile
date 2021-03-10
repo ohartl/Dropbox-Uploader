@@ -1,10 +1,9 @@
-FROM alpine:3.5
-MAINTAINER peez@stiffi.de
+FROM alpine:latest
+MAINTAINER hello@ohartl.de
 
-RUN apk add --no-cache bash curl
+RUN apk add --no-cache bash curl zip
 COPY / /opt/dropbox_uploader
 RUN mkdir -p /config && mkdir -p /workdir
-RUN apk --no-cache add zip
 
 VOLUME /config /workdir
 
