@@ -33,6 +33,23 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        #scan-ref: '.'
+        ignore-unfixed: true
+        format: 'template'
+        #image-ref: '${{ steps.docker_meta.outputs.tags[0] }}'
+        #'${{ env.IMAGE_NAME }}:'
+        #format: 'template'
+        template: '@/contrib/sarif.tpl'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL'
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: 'trivy-results.sarif'
     - name: Docker meta
       id: docker_meta
       uses: crazy-max/ghaction-docker-meta@v1
@@ -85,15 +102,4 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.docker_meta.outputs.tags }}
         labels: ${{ steps.docker_meta.outputs.labels }}
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: '${{ steps.docker_meta.outputs.tags[0] }}'
-        #'${{ env.IMAGE_NAME }}:'
-        format: 'template'
-        template: '@/contrib/sarif.tpl'
-        output: 'trivy-results.sarif'
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: 'trivy-results.sarif'
+
