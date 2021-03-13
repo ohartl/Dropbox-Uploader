@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - '**'
+      - 'master'
     tags:
       - 'v*.*.*'
   pull_request:
@@ -21,9 +21,11 @@ jobs:
         include:
           - file: 'Dockerfile'
             platforms: 'linux/amd64,linux/386'
-          - file: 'Dockerfile.pi'
+          - file: 'Dockerfile.arm32v6'
+            platforms: 'linux/arm/v6'
+          - file: 'Dockerfile.arm32v7'
             platforms: 'linux/arm/v7'
-          - file: 'Dockerfile.pi64'
+          - file: 'Dockerfile.arm64v8'
             platforms: 'linux/arm64'
     services:
       registry:
@@ -58,6 +60,7 @@ jobs:
         images: |
           ${{ env.IMAGE_NAME }}
     #      ghcr.io/${{ env.IMAGE_NAME }}
+        tag-latest: true
         tag-semver: |
           {{version}}
           {{major}}.{{minor}}
