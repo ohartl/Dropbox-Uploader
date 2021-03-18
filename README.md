@@ -4,14 +4,12 @@ Dropbox Uploader is a **BASH** script which can be used to upload, download, del
 
 It's written in BASH scripting language and only needs **cURL**.
 
-You can take a look to the [GitHub project page](https://github.com/andreafabrizi/Dropbox-Uploader).
+You can take a look to the [GitHub project page](https://github.com/ohartl/Dropbox-Uploader), originally created by [andreafabrizi](https://github.com/andreafabrizi/Dropbox-Uploader).
 
 **Why use this script?**
 
 * **Portable:** It's written in BASH scripting and only needs `cURL` (curl is a tool to transfer data from or to a server, available for all operating systems and installed by default in many linux distributions).
 * **Secure:** It's not required to provide your username/password to this script, because it uses the official Dropbox API v2 for the authentication process. 
-
-Please refer to the [Wiki](https://github.com/andreafabrizi/Dropbox-Uploader/wiki) for tips and additional information about this project. The Wiki is also the place where you can share your scripts and examples related to Dropbox Uploader.
 
 ## Features
 
@@ -32,20 +30,20 @@ Please refer to the [Wiki](https://github.com/andreafabrizi/Dropbox-Uploader/wik
 First, clone the repository using git (recommended):
 
 ```bash
-git clone https://github.com/andreafabrizi/Dropbox-Uploader.git
+git clone https://github.com/ohartl/Dropbox-Uploader.git
 ```
 
 or download the script manually using this command:
 
 ```bash
-curl "https://raw.githubusercontent.com/andreafabrizi/Dropbox-Uploader/master/dropbox_uploader.sh" -o dropbox_uploader.sh
+curl "https://raw.githubusercontent.com/ohartl/Dropbox-Uploader/master/dropbox_uploader.sh" -o dropbox_uploader.sh
 ```
 
 Then give the execution permission to the script and run it:
 
 ```bash
- $chmod +x dropbox_uploader.sh
- $./dropbox_uploader.sh
+chmod +x dropbox_uploader.sh
+./dropbox_uploader.sh
 ```
 
 The first time you run `dropbox_uploader`, you'll be guided through a wizard in order to configure access to your Dropbox. This configuration will be stored in `~/.dropbox_uploader`.
@@ -139,20 +137,20 @@ Doesn't check for SSL certificates (insecure)
 
 * **-x &lt;FILENAME&gt;**  
 Ignores/excludes directories or files from syncing.
--x filename -x directoryname. 
+`-x filename` or `-x directoryname`. 
 
 **Examples:**
 ```bash
-    ./dropbox_uploader.sh upload /etc/passwd /myfiles/passwd.old
-    ./dropbox_uploader.sh upload *.zip /
-    ./dropbox_uploader.sh -x .git upload ./project /
-    ./dropbox_uploader.sh download /backup.zip
-    ./dropbox_uploader.sh delete /backup.zip
-    ./dropbox_uploader.sh mkdir /myDir/
-    ./dropbox_uploader.sh meta /path/to/remotefile.zip
-    ./dropbox_uploader.sh upload "My File.txt" "My File 2.txt"
-    ./dropbox_uploader.sh share "My File.txt"
-    ./dropbox_uploader.sh list
+./dropbox_uploader.sh upload /etc/passwd /myfiles/passwd.old
+./dropbox_uploader.sh upload *.zip /
+./dropbox_uploader.sh -x .git upload ./project /
+./dropbox_uploader.sh download /backup.zip
+./dropbox_uploader.sh delete /backup.zip
+./dropbox_uploader.sh mkdir /myDir/
+./dropbox_uploader.sh meta /path/to/remotefile.zip
+./dropbox_uploader.sh upload "My File.txt" "My File 2.txt"
+./dropbox_uploader.sh share "My File.txt"
+./dropbox_uploader.sh list
 ```
 
 ## Tested Environments
@@ -186,30 +184,30 @@ To use a proxy server, just set the **https_proxy** environment variable:
 
 **Linux:**
 ```bash
-    export HTTP_PROXY_USER=XXXX
-    export HTTP_PROXY_PASSWORD=YYYY
-    export https_proxy=http://192.168.0.1:8080
+export HTTP_PROXY_USER=XXXX
+export HTTP_PROXY_PASSWORD=YYYY
+export https_proxy=http://192.168.0.1:8080
 ```
 
 **BSD:**
 ```bash
-    setenv HTTP_PROXY_USER XXXX
-    setenv HTTP_PROXY_PASSWORD YYYY
-    setenv https_proxy http://192.168.0.1:8080
+setenv HTTP_PROXY_USER XXXX
+setenv HTTP_PROXY_PASSWORD YYYY
+setenv https_proxy http://192.168.0.1:8080
 ```
    
 ## BASH and Curl installation
 
 **Debian & Ubuntu Linux:**
 ```bash
-    sudo apt-get install bash (Probably BASH is already installed on your system)
-    sudo apt-get install curl
+sudo apt-get install bash (Probably BASH is already installed on your system)
+sudo apt-get install curl
 ```
 
 **BSD:**
 ```bash
-    cd /usr/ports/shells/bash && make install clean
-    cd /usr/ports/ftp/curl && make install clean
+cd /usr/ports/shells/bash && make install clean
+cd /usr/ports/ftp/curl && make install clean
 ```
 
 **Cygwin:**  
@@ -225,61 +223,15 @@ Before running the script, you need to convert it using the dos2unix command.
 * Download the source tarball from http://curl.haxx.se/download.html
 * Follow the INSTALL instructions
 
-## DropShell
-
-DropShell is an interactive DropBox shell, based on DropBox Uploader:
-
-```bash
-DropShell v0.2
-The Intractive Dropbox SHELL
-Andrea Fabrizi - andrea.fabrizi@gmail.com
-
-Type help for the list of the available commands.
-
-andrea@Dropbox:/$ ls
- [D] 0       Apps
- [D] 0       Camera Uploads
- [D] 0       Public
- [D] 0       scripts
- [D] 0       Security
- [F] 105843  notes.txt
-andrea@DropBox:/ServerBackup$ get notes.txt
-```
-
 ## Running as Docker Container
-First build the docker image:
+
+Run the Docker Container as following:
 ```bash
-docker build https://github.com/sircuri/Dropbox-Uploader.git -f Dockerfile -t <TAG>
+docker run -i --rm --user=$(id -u):$(id -g) -v <LOCAL_CONFIG_PATH>:/config:ro -v <YOUR_DATA_DIR_MOUNT>:/workdir ohartl/dropbox-uploader:latest <Arguments> 
 ```
-or for RaspBerry:
-```bash
-docker build https://github.com/sircuri/Dropbox-Uploader.git -f Dockerfile.pi -t <TAG>
-```
-then, you can run it as following:
-```bash
-docker run -i --rm --user=$(id -u):$(id -g) -v <LOCAL_CONFIG_PATH>:/config -v <YOUR_DATA_DIR_MOUNT>:/workdir <TAG> <Arguments> 
-```
+
 This will store the auth token information in the given local directory in `<LOCAL_CONFIG_PATH>`. To ensure access to your mounted directories it can be important to pass a UID and GID to the docker deamon (as stated in the example by the --user argument)
 
-Using the script with docker makes it also possible to run the script even on windows machines.
+Using the script with docker also makes it possible to run the script on windows machines.
 
 To use a proxy, just set the mentioned environment variables via the docker `-e` parameter.
-
-### Prebuilt containers
-* Rpi4 (ARM/v8) [ARM/V8 Dropbox Uploader on Dockerhub](https://hub.docker.com/layers/ummarbhutta/dropboxuploader/1.1-armv8/images/sha256-16312dea974c08ada6c47156c13b5f09ffb8f2293f787a543269398daa11a396?context=explore)
-
-## Related projects
-[thunar-dropbox](https://github.com/mDfRg/Thunar-Dropbox-Uploader-plugin/tree/thunar-dropbox/plugins/thunar): A simple extension to Dropbox Uploader that provides a convenient method to share your Dropbox files with one click!
-
-## Upgrading from old dropbox API
-Starting September 30th, 2021, Dropbox is updating their API (OAuth scopes, PKCE, refresh tokens, and short-lived access tokens)
-dropbox_uploader.sh configurations made with the old API will not longer work after that date.
-Reconfigure dropbox_uploader.sh:
-*  Go to https://www.dropbox.com/account/connected_apps, expand your configuration, and click the button 'Disconnect'
-*  Rename or delete your configuration file .dropbox_uploader
-
-## Donations
-
- If you want to support this project, please consider donating:
- * PayPal: https://paypal.me/AndreaF83
- * BTC: 1JHCGAMpKqUwBjcT3Kno9Wd5z16K6WKPqG
